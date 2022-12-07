@@ -1,0 +1,34 @@
+help-bash.sh displays the things like documentation comments in .sh file.
+
+USAGE:
+  help-bash.sh [OPTIONS] [PATH]
+
+
+ARGS:
+    <PATH>
+        A file to display documentations.
+
+
+OPTIONS:
+    -f
+        Displays top-level (outside of any statements) functions documentations.
+    -r
+        Displays top-level variables documentations.
+    -h
+        Prints help information.
+    -v
+        Prints version information.
+    -t
+        Threshold to determine whether to display the top-level comments.
+        e.g. the value is 3 then displays 3 or more lines of top-level comments.
+        Default is 5.
+    -d
+        Enable debug logs.
+
+
+ENVIRONMENT VARIABLES:
+    AWK
+        awk command.
+    GREP
+        grep command.
+
