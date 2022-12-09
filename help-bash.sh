@@ -118,16 +118,18 @@ __exit() {
 # desc1
 # desc2
 display_docs() {
+    # print newline
+    readonly awkscript_nl='function nl(){printf("\n")}'
     # initialize a variable buf (array)
     readonly awkscript_init_buf='function init_buf(){split("",buf)}'
     # push element v to buf. l is for a local variable
     readonly awkscript_push='function push(v,l){l=length(buf);buf[l+1]=v}'
     # print all elements in buf. i is for a local variable
-    readonly awkscript_print_buf='function print_buf(i){for(i in buf)print buf[i]}'
-    # print newline
-    readonly awkscript_nl='function nl(){printf("\n")}'
+    readonly awkscript_print_buf='function print_buf(i){for(i in buf){print buf[i]}nl()}'
+    # length of buf
+    readonly awkscript_len='function len(){return length(buf)}'
 
-    readonly awkscript_defun="${awkscript_init_buf}${awkscript_push}${awkscript_print_buf}${awkscript_nl}"
+    readonly awkscript_defun="${awkscript_nl}${awkscript_init_buf}${awkscript_push}${awkscript_print_buf}${awkscript_len}"
 
     # prepare buf
     readonly awkscript_begin='BEGIN{init_buf()}'
@@ -136,11 +138,11 @@ display_docs() {
     # write debug log
     readonly awkscript_debug_print='debug{printf("DBG[read][line=%d]:%s\n",NR,$0);printf("DBG[buf][line=%d][len=%d]:",NR,length(buf));for(i in buf)printf("[%s]",buf[i]);nl()}'
     # print function comment and clear buf
-    readonly awkscript_print_function='/^[^#]/&&/\(\)/&&length(buf)>0{if(needfunc){match($0,/[^)]+\)/);print("Function:"substr($0,RSTART,RLENGTH));print_buf();nl()}init_buf()}'
+    readonly awkscript_print_function='/^[^#]/&&/\(\)/&&len()>0{if(needfunc){match($0,/[^)]+\)/);print("Function:"substr($0,RSTART,RLENGTH));print_buf()}init_buf()}'
     # print variable comment and clear buf
-    readonly awkscript_print_variable='/^[^#]/&&/=/&&length(buf)>0{if(needvar){print("Variable:"$0);print_buf();nl()}init_buf()}'
+    readonly awkscript_print_variable='/^[^#]/&&/=/&&len()>0{if(needvar){print("Variable:"$0);print_buf()}init_buf()}'
     # print top level comment and clear buf
-    readonly awkscript_print_toplevel='/^[^#]|^$/{if(length(buf)>=t){print_buf();nl()}init_buf()}'
+    readonly awkscript_print_toplevel='/^[^#]|^$/{if(len()>=t){print_buf()}init_buf()}'
 
     readonly awkscript_prog="${awkscript_begin}${awkscript_append}${awkscript_debug_print}${awkscript_print_function}${awkscript_print_variable}${awkscript_print_toplevel}"
 
