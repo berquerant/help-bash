@@ -18,14 +18,10 @@
 #         Displays top-level variables documentations.
 #     -h
 #         Prints help information.
-#     -v
-#         Prints version information.
 #     -t
 #         Threshold to determine whether to display the top-level comments.
 #         e.g. the value is 3 then displays 3 or more lines of top-level comments.
-#         Default is 5.
-#     -d
-#         Enable debug logs.
+#         Default is 3.
 #
 #
 # ENVIRONMENT VARIABLES:
@@ -33,25 +29,22 @@
 #         awk command.
 #     GREP
 #         grep command.
-
-# Version of this script.
-readonly version="0.1.0"
+#     HELP_BASH_DEBUG
+#         If value is 1 then enables debug logs.
 
 readonly AWK="${AWK:-awk}"
 readonly GREP="${GREP:-grep}"
 
-# For -d option.
-debug=0
+# For envvar HELP_BASH_DEBUG.
+debug="${HELP_BASH_DEBUG:-0}"
 # For -t option.
-toplevel=5
+toplevel=3
 # For -f option.
 needfunc=0
 # For -r option.
 needvar=0
 # For -h option.
 do_help=false
-# For -v option.
-do_version=false
 # Exit status of this script.
 exit_status=0
 
@@ -60,11 +53,6 @@ dbg() {
     if test "$debug" -eq "1" ; then
         echo "DBG:$*" >&2
     fi
-}
-
-# Print version of this script.
-print_version() {
-    echo "${version}"
 }
 
 on_error() {
@@ -143,8 +131,10 @@ display_docs() {
     readonly awkscript_print_variable='/^[^#]/&&/=/&&len()>0{if(needvar){print("Variable:"$0);print_buf()}init_buf()}'
     # print top level comment and clear buf
     readonly awkscript_print_toplevel='/^[^#]|^$/{if(len()>=t){print_buf()}init_buf()}'
+    # cleanup
+    readonly awkscript_end='END{if(len()>=t)print_buf()}'
 
-    readonly awkscript_prog="${awkscript_begin}${awkscript_append}${awkscript_debug_print}${awkscript_print_function}${awkscript_print_variable}${awkscript_print_toplevel}"
+    readonly awkscript_prog="${awkscript_begin}${awkscript_append}${awkscript_debug_print}${awkscript_print_function}${awkscript_print_variable}${awkscript_print_toplevel}${awkscript_end}"
 
     readonly awkscript="${awkscript_defun}${awkscript_prog}"
     dbg "$awkscript"
@@ -166,9 +156,6 @@ while getopts ":hvrft:d" opts ; do
     case "$opts" in
         h)
             do_help=true
-            ;;
-        v)
-            do_version=true
             ;;
         f)
             needfunc=1
@@ -206,7 +193,6 @@ dbg_params() {
     dbg "Parameter:needfunc: ${needfunc}"
     dbg "Parameter:needvar: ${needvar}"
     dbg "Parameter:do_help: ${do_help}"
-    dbg "Parameter:do_version: ${do_version}"
     dbg "Parameter:exit_status: ${exit_status}"
     dbg "Parameter:target_file: ${target_file}"
 }
@@ -218,11 +204,6 @@ if "$do_help" ; then
     __exit
 fi
 
-if "$do_version" ; then
-    print_version
-    __exit
-fi
-
 if test -n "$target_file" ; then
     display_docs < "$target_file"
 else
@@ -230,3 +211,6 @@ else
 fi
 
 __exit
+#
+#
+# help-bash.sh ends here.
