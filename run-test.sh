@@ -1,3 +1,3 @@
 #!/bin/bash
 
-bash ./test.sh
+bash ./test.sh "$@"
