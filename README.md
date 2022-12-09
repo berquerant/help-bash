@@ -20,14 +20,10 @@ OPTIONS:
         Displays top-level variables documentations.
     -h
         Prints help information.
-    -v
-        Prints version information.
     -t
         Threshold to determine whether to display the top-level comments.
         e.g. the value is 3 then displays 3 or more lines of top-level comments.
-        Default is 5.
-    -d
-        Enable debug logs.
+        Default is 3.
 
 
 ENVIRONMENT VARIABLES:
@@ -35,6 +31,12 @@ ENVIRONMENT VARIABLES:
         awk command.
     GREP
         grep command.
+    HELP_BASH_DEBUG
+        If value is 1 then enables debug logs.
+
+
+
+help-bash.sh ends here.
 ```
 
 Above is equivalent to `./help-bash.sh ./help-bash.sh`.
@@ -61,14 +63,10 @@ OPTIONS:
         Displays top-level variables documentations.
     -h
         Prints help information.
-    -v
-        Prints version information.
     -t
         Threshold to determine whether to display the top-level comments.
         e.g. the value is 3 then displays 3 or more lines of top-level comments.
-        Default is 5.
-    -d
-        Enable debug logs.
+        Default is 3.
 
 
 ENVIRONMENT VARIABLES:
@@ -76,14 +74,13 @@ ENVIRONMENT VARIABLES:
         awk command.
     GREP
         grep command.
+    HELP_BASH_DEBUG
+        If value is 1 then enables debug logs.
 
-Variable:readonly version="0.1.0"
-Version of this script.
+Variable:debug="${HELP_BASH_DEBUG:-0}"
+For envvar HELP_BASH_DEBUG.
 
-Variable:debug=0
-For -d option.
-
-Variable:toplevel=5
+Variable:toplevel=3
 For -t option.
 
 Variable:needfunc=0
@@ -95,17 +92,11 @@ For -r option.
 Variable:do_help=false
 For -h option.
 
-Variable:do_version=false
-For -v option.
-
 Variable:exit_status=0
 Exit status of this script.
 
 Function:dbg()
 Print debug log when debug is 1.
-
-Function:print_version()
-Print version of this script.
 
 Function:display_docs()
 Find top-level comments and print them.
@@ -158,6 +149,10 @@ Return status 1 if given argument $1 is a natural integer.
 Variable:readonly target_file="$1"
 File to display documentations.
 Empty means stdin.
+
+
+
+help-bash.sh ends here.
 ```
 
 # Requirements
